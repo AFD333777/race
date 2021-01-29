@@ -11,11 +11,11 @@ class Logic:
         self.running = True
         self.condStart = False
         self.condPause = False
-        self.condDrive = False
+        self.condBoost = False
+        self.condLeft = False
+        self.condRight = False
         self.clock = pygame.time.Clock()
         self.draw = Draw(self.screen)
-        self.homeScreen = pygame.surface.Surface((800, 600))
-        self.pauseScreen = pygame.surface.Surface((800, 600))
         self.draw.drawHomeScreen()
 
     def run(self):
@@ -27,24 +27,17 @@ class Logic:
         self.condStart = True
         self.draw.drawField()
         self.draw.drawCar(400, 400)
-        # рисуем поле
-        pass
 
     def resumeGame(self):
-        # вернуть текущий результат
         self.draw.drawField()
         self.draw.drawCar(self.draw.car.rect.x, self.draw.car.rect.y)
         self.condStart = True
         self.condPause = False
-        pass
 
     def pauseGame(self):
         self.draw.drawPauseScreen()
         self.condPause = True
         self.condStart = False
-        # рисуем заставку
-        # сохраняем текущий результат
-        pass
 
     def main_loop(self):
         for event in pygame.event.get():
@@ -75,18 +68,27 @@ class Logic:
                     elif self.condPause:
                         self.resumeGame()
                 if event.key == pygame.K_w:
-                    self.condDrive = True
+                    self.condBoost = True
                 if event.key == pygame.K_a:
-                    self.draw.goLeft()
+                    self.condLeft = True
                 if event.key == pygame.K_d:
-                    self.draw.goRight()
+                    self.condRight = True
             if event.type == pygame.KEYUP:
                 if event.key == pygame.K_w:
-                    self.condDrive = False
+                    self.condBoost = False
+                if event.key == pygame.K_a:
+                    self.condLeft = False
+                if event.key == pygame.K_d:
+                    self.condRight = False
         if self.condStart:
-            if self.condDrive:
+            if self.condBoost:
                 self.draw.boostSpeed()
             else:
                 self.draw.baseSpeed()
+            if self.condRight:
+                self.draw.goRight()
+            if self.condLeft:
+                self.draw.goLeft()
+            self.draw.updateScreen()
         pygame.display.flip()
-        self.clock.tick(30)
+        self.clock.tick(60)
