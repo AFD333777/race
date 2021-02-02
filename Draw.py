@@ -1,13 +1,14 @@
 import pygame
 import os
 import sys
+import random
 
 STEP = 3
 
 
 class Draw:
     def __init__(self, screen):
-        pygame.display.set_caption("Гонки")
+        pygame.display.set_caption("Race Escape")
         self.screen = screen
         self.carGroup = pygame.sprite.Group()
         self.roadside = pygame.sprite.Group()
@@ -17,8 +18,14 @@ class Draw:
         self.smokeright = pygame.sprite.Sprite()
         self.cactus = pygame.sprite.Sprite()
         self.tree = pygame.sprite.Sprite()
+        self.barrier = pygame.sprite.Sprite()
+        self.box = pygame.sprite.Sprite()
+        self.enemyCar = pygame.sprite.Sprite()
+        self.score = 0
+        self.countStars = 0
         self.loadCar()
         self.loadRoadSide()
+        self.loadBarriers()
         self.road = pygame.transform.scale(
             self.loadImage(os.path.join(os.path.join(os.getcwd(), "data"), "road.jpg")), (500, 600))
         self.grass = pygame.transform.scale(
@@ -58,8 +65,9 @@ class Draw:
         self.screen.blit(pygame.font.Font(None, 50).render("Выход", True, (244, 245, 219)), (350, 200))
         self.screen.blit(pygame.font.Font(None, 30).render("Управление:", True, (217, 218, 176)), (5, 20))
         self.screen.blit(pygame.font.Font(None, 30).render("W - вперед", True, (217, 218, 176)), (5, 50))
-        self.screen.blit(pygame.font.Font(None, 30).render("A - влево", True, (217, 218, 176)), (5, 80))
-        self.screen.blit(pygame.font.Font(None, 30).render("D - вправо", True, (217, 218, 176)), (5, 110))
+        self.screen.blit(pygame.font.Font(None, 30).render("S - назад", True, (217, 218, 176)), (5, 80))
+        self.screen.blit(pygame.font.Font(None, 30).render("A - влево", True, (217, 218, 176)), (5, 110))
+        self.screen.blit(pygame.font.Font(None, 30).render("D - вправо", True, (217, 218, 176)), (5, 140))
         pygame.display.flip()
 
     def drawPauseScreen(self):
@@ -80,21 +88,39 @@ class Draw:
         pygame.draw.rect(self.screen, (0, 0, 255), (675, 40, 120, 60), 5)
         self.screen.blit(pygame.font.Font(None, 50).render("Race", True, (217, 218, 176)), (675, 40))
         self.screen.blit(pygame.font.Font(None, 50).render("Escape", True, (217, 218, 176)), (675, 70))
-        self.screen.blit(pygame.font.Font(None, 50).render("Pause", True, (0, 255, 0)), (160, 30))
-        pygame.draw.rect(self.screen, (0, 0, 0), (0, 0, 150, 300))
-        pygame.draw.rect(self.screen, (0, 0, 255), (0, 0, 150, 300), 5)
+        pygame.draw.rect(self.screen, (35, 104, 155), (0, 0, 160, 100))
+        pygame.draw.rect(self.screen, (72, 126, 149), (0, 0, 160, 100), 5)
+        self.screen.blit(pygame.font.Font(None, 30).render(f"Score - {self.score}", True, (217, 218, 176)), (10, 20))
+        self.screen.blit(pygame.font.Font(None, 50).render("Pause", True, (0, 255, 0)), (10, 50))
         pygame.display.flip()
+
+    def drawFinishScreen(self):
+        self.screen.fill((0, 0, 0))
+        self.screen.blit(self.road, (160, 0))
+        self.screen.blit(self.grass, (0, 0))
+        self.screen.blit(self.grass, (650, 0))
+        pygame.draw.rect(self.screen, (35, 104, 155), (160, 100, 490, 150))
+        pygame.draw.rect(self.screen, (0, 0, 255), (160, 100, 490, 150), 5)
+        pygame.draw.rect(self.screen, (35, 104, 155), (675, 40, 120, 60))
+        pygame.draw.rect(self.screen, (0, 0, 255), (675, 40, 120, 60), 5)
+        self.screen.blit(pygame.font.Font(None, 50).render("Race", True, (217, 218, 176)), (675, 40))
+        self.screen.blit(pygame.font.Font(None, 50).render("Escape", True, (217, 218, 176)), (675, 70))
+        self.screen.blit(pygame.font.Font(None, 50).render("Игра закончена!", True, (217, 218, 176)), (275, 110))
+        self.screen.blit(pygame.font.Font(None, 30).render(f"Ваш результат - {self.score}", True, (217, 218, 176)),
+                         (325, 150))
+        self.screen.blit(
+            pygame.font.Font(None, 30).render("Для выхода в главное меню нажмите пробел..", True, (217, 218, 176)),
+            (175, 200))
 
     def drawField(self):
         self.screen.blit(self.road, (160, 0))
         self.screen.blit(self.grass, (0, 0))
         self.screen.blit(self.grass, (650, 0))
-        pygame.draw.rect(self.screen, (0, 0, 0), (0, 0, 150, 300))
-        pygame.draw.rect(self.screen, (0, 0, 255), (0, 0, 150, 300), 5)
-        if self.tree.rect.y >= 600:
-            self.drawRoadSide(10)
-        else:
-            self.drawRoadSide(self.tree.rect.y + 1)
+        pygame.draw.rect(self.screen, (35, 104, 155), (0, 0, 160, 100))
+        pygame.draw.rect(self.screen, (72, 126, 149), (0, 0, 160, 100), 5)
+        self.screen.blit(pygame.font.Font(None, 30).render(f"Score - {self.score}", True, (217, 218, 176)), (10, 20))
+        self.screen.blit(pygame.font.Font(None, 25).render(f"Собрано звезд - {self.countStars}", True, (217, 218, 176)),
+                         (5, 45))
 
     def loadCar(self):
         self.car.image = self.loadImage("mercedes.png")
@@ -117,12 +143,49 @@ class Draw:
         self.tree.image = pygame.transform.scale(self.tree.image, (120, 120))
         self.cactus.rect = self.cactus.image.get_rect()
         self.tree.rect = self.tree.image.get_rect()
-        self.roadside.add(self.tree)
+        self.roadside.add(random.choice([self.tree, self.cactus]))
+
+    def loadBarriers(self):
+        self.barrier.image = self.loadImage("barrier.png")
+        self.box.image = self.loadImage("box.jpg")
+        self.enemyCar.image = self.loadImage("redcar.png")
+        self.barrier.image = pygame.transform.scale(self.barrier.image, (75, 75))
+        self.box.image = pygame.transform.scale(self.box.image, (80, 80))
+        self.enemyCar.image = pygame.transform.scale(self.enemyCar.image, (140, 140))
+        self.barrier.rect = self.barrier.image.get_rect()
+        self.box.rect = self.box.image.get_rect()
+        self.enemyCar.rect = self.enemyCar.image.get_rect()
+        self.getRandomCoords()
+        self.barriers.add(self.barrier)
+        self.barriers.add(self.box)
+        self.barriers.add(self.enemyCar)
 
     def drawRoadSide(self, y):
-        self.tree.rect.x = 660
-        self.tree.rect.y = y
+        self.roadside.sprites().pop().rect.x = 660
+        self.roadside.sprites().pop().rect.y = y
         self.roadside.draw(self.screen)
+
+    def checkCollide(self):
+        if not (pygame.sprite.collide_mask(self.car, self.barrier) or
+                pygame.sprite.collide_mask(self.car, self.enemyCar) or
+                pygame.sprite.collide_mask(self.car, self.box)):
+            return True
+        return False
+
+    def getRandomCoords(self):
+        coords = [(160, 10), (560, 10), (290, 10), (400, 10)]
+        random.shuffle(coords)
+        self.enemyCar.rect.x, self.enemyCar.rect.y = coords.pop()
+        self.box.rect.x, self.box.rect.y = coords.pop()
+        self.barrier.rect.x, self.barrier.rect.y = coords.pop()
+
+    def drawBarriers(self, condNew):
+        if condNew:
+            self.getRandomCoords()
+        else:
+            for elem in self.barriers.sprites():
+                elem.rect.y += 3
+        self.barriers.draw(self.screen)
 
     def drawCar(self, x, y):
         self.car.rect.x = x
@@ -134,22 +197,42 @@ class Draw:
         self.carGroup.draw(self.screen)
 
     def baseSpeed(self):
-        self.roadside.draw(self.screen)
-        # рисуем растения сбоку
-        # выкатываем препятствия
+        self.updateScreen()
+        if self.roadside.sprites().pop().rect.y >= 600:
+            self.roadside.empty()
+            self.roadside.add(random.choice([self.tree, self.cactus]))
+            self.drawRoadSide(10)
+        else:
+            self.drawRoadSide(self.roadside.sprites().pop().rect.y + 2)
+        if self.enemyCar.rect.y >= 600:
+            self.drawBarriers(True)
+            self.score += 1
+        else:
+            self.drawBarriers(False)
 
-    def boostSpeed(self):
-        self.car.rect.y = self.car.rect.y - STEP
+    def goForward(self):
+        if self.car.rect.y != 175:
+            self.car.rect.y = self.car.rect.y - STEP
+            self.smokeright.rect.y = self.smokeright.rect.y - STEP
+            self.smokeleft.rect.y = self.smokeleft.rect.y - STEP
 
     def goRight(self):
-        self.car.rect.x = self.car.rect.x + STEP
-        self.smokeright.rect.x = self.smokeright.rect.x + STEP
-        self.smokeleft.rect.x = self.smokeleft.rect.x + STEP
+        if self.car.rect.x != 565:
+            self.car.rect.x = self.car.rect.x + STEP
+            self.smokeright.rect.x = self.smokeright.rect.x + STEP
+            self.smokeleft.rect.x = self.smokeleft.rect.x + STEP
 
     def goLeft(self):
-        self.car.rect.x = self.car.rect.x - STEP
-        self.smokeright.rect.x = self.smokeright.rect.x - STEP
-        self.smokeleft.rect.x = self.smokeleft.rect.x - STEP
+        if self.car.rect.x != 145:
+            self.car.rect.x = self.car.rect.x - STEP
+            self.smokeright.rect.x = self.smokeright.rect.x - STEP
+            self.smokeleft.rect.x = self.smokeleft.rect.x - STEP
+
+    def goBack(self):
+        if self.smokeright.rect.y != 560:
+            self.car.rect.y = self.car.rect.y + STEP
+            self.smokeright.rect.y = self.smokeright.rect.y + STEP
+            self.smokeleft.rect.y = self.smokeleft.rect.y + STEP
 
     def updateScreen(self):
         self.drawField()
