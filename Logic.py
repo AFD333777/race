@@ -21,7 +21,7 @@ class Logic:
 
     def run(self):
         while self.running:
-            self.main_loop()
+            self.mainLoop()
         pygame.quit()
 
     def startGame(self):
@@ -50,66 +50,87 @@ class Logic:
         self.condFinish = True
         self.draw.getRandomCoords()
 
-    def main_loop(self):
+    def checkPauseScreen(self, x, y):
+        if 300 <= x <= 520 and 150 <= y <= 190:
+            self.resumeGame()
+        if 300 <= x <= 520 and 200 <= y <= 240:
+            self.finishGame()
+        if 300 <= x <= 520 and 250 <= y <= 290:
+            self.running = False
+
+    def checkStartDirection(self, event):
+        if event.key == pygame.K_w:
+            self.condForward = True
+        if event.key == pygame.K_a:
+            self.condLeft = True
+        if event.key == pygame.K_d:
+            self.condRight = True
+        if event.key == pygame.K_s:
+            self.condBack = True
+
+    def checkFinishDirection(self, event):
+        if event.key == pygame.K_w:
+            self.condForward = False
+        if event.key == pygame.K_a:
+            self.condLeft = False
+        if event.key == pygame.K_d:
+            self.condRight = False
+        if event.key == pygame.K_s:
+            self.condBack = False
+
+    def checkMenu(self, x, y):
+        if 300 <= x <= 520 and 150 <= y <= 190:
+            self.startGame()
+        if 300 <= x <= 520 and 200 <= y <= 240:
+            self.running = False
+
+    def checkPause(self):
+        if self.condStart:
+            self.pauseGame()
+        elif self.condPause:
+            self.resumeGame()
+
+    def showHomeScreen(self):
+        self.condMenu = True
+        self.condFinish = False
+        self.draw.drawHomeScreen()
+
+    def goDirection(self):
+        if self.condForward:
+            self.draw.goForward()
+        if self.condRight:
+            self.draw.goRight()
+        if self.condLeft:
+            self.draw.goLeft()
+        if self.condBack:
+            self.draw.goBack()
+
+    def mainLoop(self):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 self.running = False
             if event.type == pygame.MOUSEBUTTONDOWN:
                 xMouse, yMouse = pygame.mouse.get_pos()
                 if self.condPause:
-                    if 300 <= xMouse <= 520 and 150 <= yMouse <= 190:
-                        self.resumeGame()
-                    if 300 <= xMouse <= 520 and 200 <= yMouse <= 240:
-                        self.finishGame()
-                    if 300 <= xMouse <= 520 and 250 <= yMouse <= 290:
-                        self.running = False
+                    self.checkPauseScreen(xMouse, yMouse)
                 elif self.condStart:
                     pass
                 elif self.condMenu:
-                    if 300 <= xMouse <= 520 and 150 <= yMouse <= 190:
-                        self.startGame()
-                    if 300 <= xMouse <= 520 and 200 <= yMouse <= 240:
-                        self.running = False
+                    self.checkMenu(xMouse, yMouse)
             if event.type == pygame.KEYDOWN:
                 if self.condFinish:
                     if event.key == pygame.K_SPACE:
-                        self.condMenu = True
-                        self.condFinish = False
-                        self.draw.drawHomeScreen()
+                        self.showHomeScreen()
                 if event.key == pygame.K_ESCAPE:
-                    if self.condStart:
-                        self.pauseGame()
-                    elif self.condPause:
-                        self.resumeGame()
-                if event.key == pygame.K_w:
-                    self.condForward = True
-                if event.key == pygame.K_a:
-                    self.condLeft = True
-                if event.key == pygame.K_d:
-                    self.condRight = True
-                if event.key == pygame.K_s:
-                    self.condBack = True
+                    self.checkPause()
+                self.checkStartDirection(event)
             if event.type == pygame.KEYUP:
-                if event.key == pygame.K_w:
-                    self.condForward = False
-                if event.key == pygame.K_a:
-                    self.condLeft = False
-                if event.key == pygame.K_d:
-                    self.condRight = False
-                if event.key == pygame.K_s:
-                    self.condBack = False
+                self.checkFinishDirection(event)
         if self.condStart:
             if self.draw.checkCollide():
                 self.draw.baseSpeed()
             else:
                 self.finishGame()
-            if self.condForward:
-                self.draw.goForward()
-            if self.condRight:
-                self.draw.goRight()
-            if self.condLeft:
-                self.draw.goLeft()
-            if self.condBack:
-                self.draw.goBack()
+            self.goDirection()
         pygame.display.flip()
         self.clock.tick(60)

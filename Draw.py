@@ -4,6 +4,9 @@ import sys
 import random
 
 STEP = 3
+COLOR_FONT = (244, 245, 219)
+COLOR_INTERNAL_RECT = (35, 104, 155)
+COLOR_EXTERNAL_RECT = (72, 126, 149)
 
 
 class Draw:
@@ -47,79 +50,80 @@ class Draw:
         return image
 
     def drawHomeScreen(self):
-        self.screen.fill((0, 0, 0))
-        self.screen.blit(self.road, (160, 0))
-        self.screen.blit(self.grass, (0, 0))
-        self.screen.blit(self.grass, (650, 0))
-        pygame.draw.rect(self.screen, (35, 104, 155), (0, 0, 160, 175))
-        pygame.draw.rect(self.screen, (72, 126, 149), (0, 0, 160, 175), 5)
-        pygame.draw.rect(self.screen, (35, 104, 155), (300, 150, 220, 40))
-        pygame.draw.rect(self.screen, (35, 104, 155), (300, 200, 220, 40))
-        pygame.draw.rect(self.screen, (72, 126, 149), (300, 150, 220, 40), 3)
-        pygame.draw.rect(self.screen, (72, 126, 149), (300, 200, 220, 40), 3)
-        pygame.draw.rect(self.screen, (35, 104, 155), (675, 40, 120, 60))
-        pygame.draw.rect(self.screen, (0, 0, 255), (675, 40, 120, 60), 5)
-        self.screen.blit(pygame.font.Font(None, 50).render("Начать игру", True, (244, 245, 219)), (310, 150))
-        self.screen.blit(pygame.font.Font(None, 50).render("Race", True, (217, 218, 176)), (675, 40))
-        self.screen.blit(pygame.font.Font(None, 50).render("Escape", True, (217, 218, 176)), (675, 70))
-        self.screen.blit(pygame.font.Font(None, 50).render("Выход", True, (244, 245, 219)), (350, 200))
-        self.screen.blit(pygame.font.Font(None, 30).render("Управление:", True, (217, 218, 176)), (5, 20))
-        self.screen.blit(pygame.font.Font(None, 30).render("W - вперед", True, (217, 218, 176)), (5, 50))
-        self.screen.blit(pygame.font.Font(None, 30).render("S - назад", True, (217, 218, 176)), (5, 80))
-        self.screen.blit(pygame.font.Font(None, 30).render("A - влево", True, (217, 218, 176)), (5, 110))
-        self.screen.blit(pygame.font.Font(None, 30).render("D - вправо", True, (217, 218, 176)), (5, 140))
+        self.drawBackground()
+        self.drawHomeScreenButtons()
+        self.drawTutorial()
+        self.drawLogo()
         pygame.display.flip()
 
     def drawPauseScreen(self):
-        self.screen.fill((0, 0, 0))
-        self.screen.blit(self.road, (160, 0))
-        self.screen.blit(self.grass, (0, 0))
-        self.screen.blit(self.grass, (650, 0))
-        pygame.draw.rect(self.screen, (35, 104, 155), (300, 150, 220, 40))
-        self.screen.blit(pygame.font.Font(None, 35).render("Продолжить игру", True, (244, 245, 219)), (302, 155))
-        pygame.draw.rect(self.screen, (72, 126, 149), (300, 150, 220, 40), 3)
-        pygame.draw.rect(self.screen, (35, 104, 155), (300, 200, 220, 40))
-        self.screen.blit(pygame.font.Font(None, 40).render("Выход в меню", True, (244, 245, 219)), (310, 205))
-        pygame.draw.rect(self.screen, (72, 126, 149), (300, 200, 220, 40), 3)
-        pygame.draw.rect(self.screen, (35, 104, 155), (300, 250, 220, 40))
-        self.screen.blit(pygame.font.Font(None, 50).render("Выход", True, (244, 245, 219)), (350, 252))
-        pygame.draw.rect(self.screen, (72, 126, 149), (300, 250, 220, 40), 3)
-        pygame.draw.rect(self.screen, (35, 104, 155), (675, 40, 120, 60))
-        pygame.draw.rect(self.screen, (0, 0, 255), (675, 40, 120, 60), 5)
-        self.screen.blit(pygame.font.Font(None, 50).render("Race", True, (217, 218, 176)), (675, 40))
-        self.screen.blit(pygame.font.Font(None, 50).render("Escape", True, (217, 218, 176)), (675, 70))
-        pygame.draw.rect(self.screen, (35, 104, 155), (0, 0, 160, 100))
-        pygame.draw.rect(self.screen, (72, 126, 149), (0, 0, 160, 100), 5)
-        self.screen.blit(pygame.font.Font(None, 30).render(f"Score - {self.score}", True, (217, 218, 176)), (10, 20))
+        self.drawBackground()
+        self.drawPauseScreenButtons()
+        self.screen.blit(pygame.font.Font(None, 30).render(f"Score - {self.score}", True, COLOR_FONT), (10, 20))
         self.screen.blit(pygame.font.Font(None, 50).render("Pause", True, (0, 255, 0)), (10, 50))
         pygame.display.flip()
 
-    def drawFinishScreen(self):
+    def drawBackground(self):
         self.screen.fill((0, 0, 0))
         self.screen.blit(self.road, (160, 0))
         self.screen.blit(self.grass, (0, 0))
         self.screen.blit(self.grass, (650, 0))
-        pygame.draw.rect(self.screen, (35, 104, 155), (160, 100, 490, 150))
-        pygame.draw.rect(self.screen, (0, 0, 255), (160, 100, 490, 150), 5)
-        pygame.draw.rect(self.screen, (35, 104, 155), (675, 40, 120, 60))
+
+    def drawLogo(self):
+        pygame.draw.rect(self.screen, COLOR_INTERNAL_RECT, (675, 40, 120, 60))
         pygame.draw.rect(self.screen, (0, 0, 255), (675, 40, 120, 60), 5)
-        self.screen.blit(pygame.font.Font(None, 50).render("Race", True, (217, 218, 176)), (675, 40))
-        self.screen.blit(pygame.font.Font(None, 50).render("Escape", True, (217, 218, 176)), (675, 70))
-        self.screen.blit(pygame.font.Font(None, 50).render("Игра закончена!", True, (217, 218, 176)), (275, 110))
-        self.screen.blit(pygame.font.Font(None, 30).render(f"Ваш результат - {self.score}", True, (217, 218, 176)),
+        self.screen.blit(pygame.font.Font(None, 50).render("Race", True, COLOR_FONT), (675, 40))
+        self.screen.blit(pygame.font.Font(None, 50).render("Escape", True, COLOR_FONT), (675, 70))
+
+    def drawHomeScreenButtons(self):
+        pygame.draw.rect(self.screen, COLOR_INTERNAL_RECT, (300, 150, 220, 40))
+        pygame.draw.rect(self.screen, COLOR_INTERNAL_RECT, (300, 200, 220, 40))
+        pygame.draw.rect(self.screen, COLOR_EXTERNAL_RECT, (300, 150, 220, 40), 3)
+        pygame.draw.rect(self.screen, COLOR_EXTERNAL_RECT, (300, 200, 220, 40), 3)
+        self.screen.blit(pygame.font.Font(None, 50).render("Начать игру", True, COLOR_FONT), (310, 150))
+        self.screen.blit(pygame.font.Font(None, 50).render("Выход", True, COLOR_FONT), (350, 200))
+
+    def drawPauseScreenButtons(self):
+        pygame.draw.rect(self.screen, COLOR_INTERNAL_RECT, (300, 150, 220, 40))
+        self.screen.blit(pygame.font.Font(None, 35).render("Продолжить игру", True, COLOR_FONT), (302, 155))
+        pygame.draw.rect(self.screen, COLOR_EXTERNAL_RECT, (300, 150, 220, 40), 3)
+        pygame.draw.rect(self.screen, COLOR_INTERNAL_RECT, (300, 200, 220, 40))
+        self.screen.blit(pygame.font.Font(None, 40).render("Выход в меню", True, COLOR_FONT), (310, 205))
+        pygame.draw.rect(self.screen, COLOR_EXTERNAL_RECT, (300, 200, 220, 40), 3)
+        pygame.draw.rect(self.screen, COLOR_INTERNAL_RECT, (300, 250, 220, 40))
+        self.screen.blit(pygame.font.Font(None, 50).render("Выход", True, COLOR_FONT), (350, 252))
+        pygame.draw.rect(self.screen, COLOR_EXTERNAL_RECT, (300, 250, 220, 40), 3)
+        self.drawLogo()
+        pygame.draw.rect(self.screen, COLOR_INTERNAL_RECT, (0, 0, 160, 100))
+        pygame.draw.rect(self.screen, COLOR_EXTERNAL_RECT, (0, 0, 160, 100), 5)
+
+    def drawTutorial(self):
+        pygame.draw.rect(self.screen, COLOR_INTERNAL_RECT, (0, 0, 160, 175))
+        pygame.draw.rect(self.screen, COLOR_EXTERNAL_RECT, (0, 0, 160, 175), 5)
+        self.screen.blit(pygame.font.Font(None, 30).render("Управление:", True, COLOR_FONT), (5, 20))
+        self.screen.blit(pygame.font.Font(None, 30).render("W - вперед", True, COLOR_FONT), (5, 50))
+        self.screen.blit(pygame.font.Font(None, 30).render("S - назад", True, COLOR_FONT), (5, 80))
+        self.screen.blit(pygame.font.Font(None, 30).render("A - влево", True, COLOR_FONT), (5, 110))
+        self.screen.blit(pygame.font.Font(None, 30).render("D - вправо", True, COLOR_FONT), (5, 140))
+
+    def drawFinishScreen(self):
+        self.drawBackground()
+        pygame.draw.rect(self.screen, COLOR_INTERNAL_RECT, (160, 100, 490, 150))
+        pygame.draw.rect(self.screen, (0, 0, 255), (160, 100, 490, 150), 5)
+        self.drawLogo()
+        self.screen.blit(pygame.font.Font(None, 50).render("Игра закончена!", True, COLOR_FONT), (275, 110))
+        self.screen.blit(pygame.font.Font(None, 30).render(f"Ваш результат - {self.score}", True, COLOR_FONT),
                          (325, 150))
         self.screen.blit(
-            pygame.font.Font(None, 30).render("Для выхода в главное меню нажмите пробел..", True, (217, 218, 176)),
+            pygame.font.Font(None, 30).render("Для выхода в главное меню нажмите пробел..", True, COLOR_FONT),
             (175, 200))
 
     def drawField(self):
-        self.screen.blit(self.road, (160, 0))
-        self.screen.blit(self.grass, (0, 0))
-        self.screen.blit(self.grass, (650, 0))
-        pygame.draw.rect(self.screen, (35, 104, 155), (0, 0, 160, 100))
-        pygame.draw.rect(self.screen, (72, 126, 149), (0, 0, 160, 100), 5)
-        self.screen.blit(pygame.font.Font(None, 30).render(f"Score - {self.score}", True, (217, 218, 176)), (10, 20))
-        self.screen.blit(pygame.font.Font(None, 25).render(f"Собрано звезд - {self.countStars}", True, (217, 218, 176)),
+        self.drawBackground()
+        pygame.draw.rect(self.screen, COLOR_INTERNAL_RECT, (0, 0, 160, 100))
+        pygame.draw.rect(self.screen, COLOR_EXTERNAL_RECT, (0, 0, 160, 100), 5)
+        self.screen.blit(pygame.font.Font(None, 30).render(f"Score - {self.score}", True, COLOR_FONT), (10, 20))
+        self.screen.blit(pygame.font.Font(None, 25).render(f"Собрано звезд - {self.countStars}", True, COLOR_FONT),
                          (5, 45))
 
     def loadCar(self):
